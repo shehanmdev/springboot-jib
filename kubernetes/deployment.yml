@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jib
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-jib
+  namespace: jib
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-jib
+  template:
+    metadata:
+      labels:
+        app: springboot-jib
+    spec:
+      containers:
+        - name: springboot-jib
+          image: springboot-jib:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-jib
+  namespace: jib
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080
+      nodePort: 32321
+  selector:
+    app: springboot-jib
